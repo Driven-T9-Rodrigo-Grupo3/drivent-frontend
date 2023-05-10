@@ -1,22 +1,54 @@
 import { Typography } from '@material-ui/core';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 export default function Payment() {
+  const [isRemote, setIsRemote] = useState(null);
+  const [haveHotel, sethaveHotel] = useState(null);
+
+  function renderModalityOptions() {
+    return (
+      <>
+        <StyledDescription>Primeiro, escolha sua modalidade de ingresso</StyledDescription>
+        <OptionsModality>
+          <SelectButtonOption selected={!isRemote} onClick={() => setIsRemote(false)}>
+            <OptionName>Presencial</OptionName>
+            <OptionPrice>R$ 250</OptionPrice>
+          </SelectButtonOption>
+          <SelectButtonOption selected={isRemote} onClick={() => setIsRemote(true)}>
+            <OptionName>Online</OptionName>
+            <OptionPrice>R$ 100</OptionPrice>
+          </SelectButtonOption>
+        </OptionsModality>
+      </>
+    );
+  }
+
+  function renderHotelOptions() {
+    if (isRemote === false) {
+      return (
+        <>
+          <StyledDescription>Ótimo! Agora escolha sua modalidade de hospedagem</StyledDescription>
+          <OptionsModality>
+            <SelectButtonOption selected={!haveHotel} onClick={() => sethaveHotel(false)}>
+              <OptionName>Sem Hotel</OptionName>
+              <OptionPrice>+ R$ 0</OptionPrice>
+            </SelectButtonOption>
+            <SelectButtonOption selected={haveHotel} onClick={() => sethaveHotel(true)}>
+              <OptionName>Com Hotel</OptionName>
+              <OptionPrice>+ R$ 350</OptionPrice>
+            </SelectButtonOption>
+          </OptionsModality>
+        </>
+      );
+    }
+  }
+
   return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      <StyledDescription>Primeiro, escolha sua modalidade de ingresso</StyledDescription>
-      <OptionsModality>
-        <SelectButtonOption>
-          <OptionName>Presencial</OptionName>
-          <OptionPrice>R$ 250</OptionPrice>
-        </SelectButtonOption>
-        <SelectButtonOption>
-          <OptionName>Online</OptionName>
-          <OptionPrice>R$ 100</OptionPrice>
-        </SelectButtonOption>
-      </OptionsModality>
-
+      {renderModalityOptions()}
+      {renderHotelOptions()}
     </>
   );
 }
@@ -48,6 +80,7 @@ const SelectButtonOption = styled.button`
   width: 145px;
   height: 145px;
 
+  background: ${props => (props.selected ? '#FFEED2' : '#CECECE')};
   border: 1px solid #CECECE;
   border-radius: 20px;
 `;
