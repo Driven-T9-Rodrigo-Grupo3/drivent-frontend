@@ -107,7 +107,6 @@ export default function Payment() {
       {renderModalityOptions()}
       {renderHotelOptions()}
       {renderResume()}
-      {renderPaymentConfirmation()}
       {renderNoEnrollment()}
     </>
   );
