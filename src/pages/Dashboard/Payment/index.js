@@ -3,19 +3,19 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 export default function Payment() {
-  const [isRemote, setIsRemote] = useState(false);
-  const [haveHotel, sethaveHotel] = useState(false);
+  const [isRemote, setIsRemote] = useState(null);
+  const [haveHotel, sethaveHotel] = useState(null);
 
   function renderModalityOptions() {
     return (
       <>
         <StyledDescription>Primeiro, escolha sua modalidade de ingresso</StyledDescription>
         <OptionsModality>
-          <SelectButtonOption selected={!isRemote} onClick={() => setIsRemote(false)}>
+          <SelectButtonOption selected={isRemote === false} onClick={() => setIsRemote(false)}>
             <OptionName>Presencial</OptionName>
             <OptionPrice>R$ 250</OptionPrice>
           </SelectButtonOption>
-          <SelectButtonOption selected={isRemote} onClick={() => setIsRemote(true)}>
+          <SelectButtonOption selected={isRemote === true} onClick={() => setIsRemote(true)}>
             <OptionName>Online</OptionName>
             <OptionPrice>R$ 100</OptionPrice>
           </SelectButtonOption>
@@ -30,11 +30,11 @@ export default function Payment() {
         <>
           <StyledDescription>Ótimo! Agora escolha sua modalidade de hospedagem</StyledDescription>
           <OptionsModality>
-            <SelectButtonOption selected={!haveHotel} onClick={() => sethaveHotel(false)}>
+            <SelectButtonOption selected={haveHotel === false} onClick={() => sethaveHotel(false)}>
               <OptionName>Sem Hotel</OptionName>
               <OptionPrice>+ R$ 0</OptionPrice>
             </SelectButtonOption>
-            <SelectButtonOption selected={haveHotel} onClick={() => sethaveHotel(true)}>
+            <SelectButtonOption selected={haveHotel === true} onClick={() => sethaveHotel(true)}>
               <OptionName>Com Hotel</OptionName>
               <OptionPrice>+ R$ 350</OptionPrice>
             </SelectButtonOption>
