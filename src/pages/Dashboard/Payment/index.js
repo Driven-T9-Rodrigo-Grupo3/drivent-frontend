@@ -2,11 +2,12 @@ import { Typography } from '@material-ui/core';
 import { useState } from 'react';
 import styled from 'styled-components';
 import useEnrollment from '../../../hooks/api/useEnrollment';
+import { FcOk } from 'react-icons/fc';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
   const [isRemote, setIsRemote] = useState(null);
-  const [haveHotel, sethaveHotel] = useState(null);
+  const [haveHotel, setHaveHotel] = useState(null);
 
   function renderModalityOptions() {
     if (enrollment) {
@@ -18,7 +19,7 @@ export default function Payment() {
               <OptionName>Presencial</OptionName>
               <OptionPrice>R$ 250</OptionPrice>
             </SelectButtonOption>
-            <SelectButtonOption selected={isRemote === true} onClick={() => setIsRemote(true)}>
+            <SelectButtonOption selected={isRemote === true} onClick={() => { setIsRemote(true); setHaveHotel(false); }}>
               <OptionName>Online</OptionName>
               <OptionPrice>R$ 100</OptionPrice>
             </SelectButtonOption>
@@ -34,11 +35,11 @@ export default function Payment() {
         <>
           <StyledDescription>Ótimo! Agora escolha sua modalidade de hospedagem</StyledDescription>
           <OptionsModality>
-            <SelectButtonOption selected={haveHotel === false} onClick={() => sethaveHotel(false)}>
+            <SelectButtonOption selected={haveHotel === false} onClick={() => setHaveHotel(false)}>
               <OptionName>Sem Hotel</OptionName>
               <OptionPrice>+ R$ 0</OptionPrice>
             </SelectButtonOption>
-            <SelectButtonOption selected={haveHotel === true} onClick={() => sethaveHotel(true)}>
+            <SelectButtonOption selected={haveHotel === true} onClick={() => setHaveHotel(true)}>
               <OptionName>Com Hotel</OptionName>
               <OptionPrice>+ R$ 350</OptionPrice>
             </SelectButtonOption>
@@ -66,6 +67,30 @@ export default function Payment() {
     }
   }
 
+  const ticketType = () => {
+    return (isRemote ? 'Online' : 'Presencial') +
+      (!isRemote ? ' + ' : ' ') +
+      (haveHotel && !isRemote ? 'Com hotel' : !haveHotel && !isRemote ? 'Sem hotel' : '');
+  };
+
+  function renderPaymentConfirmation() {
+    return (
+      <>
+        <StyledDescription>Ingresso escolhido</StyledDescription>
+        <StyledTicket>
+          <OptionName>{ticketType()}</OptionName>
+          <OptionPrice>R$ {calculateValue()}</OptionPrice>
+        </StyledTicket>
+        <StyledDescription>Pagamento</StyledDescription>
+        <PaymentConfirmationMessage>
+          <FcOk size={40.33} />
+          <p><strong>Pagamento confirmado!</strong><br />
+            Prossiga para escolha de hospedagem e atividades</p>
+        </PaymentConfirmationMessage>
+      </>
+    );
+  }
+
   function renderNoEnrollment() {
     if (!enrollment) {
       return (
@@ -82,6 +107,7 @@ export default function Payment() {
       {renderModalityOptions()}
       {renderHotelOptions()}
       {renderResume()}
+      {renderPaymentConfirmation()}
       {renderNoEnrollment()}
     </>
   );
@@ -119,6 +145,20 @@ const StyledDescription = styled(Typography)`
   font-weight: 400;
   font-size: 20px;
   line-height: 23px;
+  
+  margin-bottom: 20px!important;
+`;
+
+const StyledTicket = styled.div`
+  width: 290px;
+  height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: #FFEED2;
+  border-radius: 20px;
   
   margin-bottom: 20px!important;
 `;
@@ -177,4 +217,12 @@ const OptionPrice = styled.p`
   text-align: center;
 
   color: #898989;
+`;
+
+const PaymentConfirmationMessage = styled.div`
+  display: flex;
+
+  p{
+    margin-left: 13.83px;
+  }
 `;
