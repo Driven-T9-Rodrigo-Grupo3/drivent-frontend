@@ -1,13 +1,23 @@
 import { Typography } from '@material-ui/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import { FcOk } from 'react-icons/fc';
+
+import useToken from '../../../hooks/useToken';
+
+import { CreditCardForm } from '../../../components/Payment/CreditCard';
+import { getUserTicket } from '../../../services/ticketApi';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
   const [isRemote, setIsRemote] = useState(null);
   const [haveHotel, setHaveHotel] = useState(null);
+  const [ticket, setTicket] = useState(undefined);
+  const [isPaymentPage, setIsPaymentPage] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
+
+  const token = useToken();
 
   function renderModalityOptions() {
     if (enrollment) {
@@ -76,17 +86,23 @@ export default function Payment() {
   function renderPaymentConfirmation() {
     return (
       <>
-        <StyledDescription>Ingresso escolhido</StyledDescription>
-        <StyledTicket>
-          <OptionName>{ticketType()}</OptionName>
-          <OptionPrice>R$ {calculateValue()}</OptionPrice>
-        </StyledTicket>
-        <StyledDescription>Pagamento</StyledDescription>
         <PaymentConfirmationMessage>
           <FcOk size={40.33} />
           <p><strong>Pagamento confirmado!</strong><br />
             Prossiga para escolha de hospedagem e atividades</p>
         </PaymentConfirmationMessage>
+      </>
+    );
+  }
+
+  function renderTicketDetails() {
+    return (
+      <>
+        <StyledDescription>Ingresso escolhido</StyledDescription>
+        <StyledTicket>
+          <OptionName>{ticketType()}</OptionName>
+          <OptionPrice>R$ {calculateValue()}</OptionPrice>
+        </StyledTicket>
       </>
     );
   }
@@ -101,14 +117,46 @@ export default function Payment() {
     }
   }
 
+  useEffect(async() => {
+    const ticket = await getUserTicket(token);
+    setTicket(ticket);
+    if (ticket.status === 'PAID') {
+      setIsPaymentPage(true);
+      setIsPaid(true);
+    }
+  }, []);
+
   return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      {renderModalityOptions()}
-      {renderHotelOptions()}
-      {renderResume()}
-      {renderPaymentConfirmation()}
-      {renderNoEnrollment()}
+      { !isPaymentPage ?  (
+        <>
+          {renderModalityOptions()}
+          {renderHotelOptions()}
+          {renderResume()}    
+          {renderNoEnrollment()}          
+        </>) : (
+        <>
+          <PaymentContainer>
+            {renderTicketDetails()}
+          </PaymentContainer>
+
+          <StyledDescription>Pagamento</StyledDescription>
+          
+          {/* aqui vai o ticket.id, mas colocá-lo agora quebra o site */}
+          {
+            isPaid === false ? (
+              <CreditCardForm ticketId={ticket}/> 
+            ) : (
+              <>
+                {renderPaymentConfirmation()}
+              </>
+            )
+          }         
+          
+        </>
+      )}
+      
     </>
   );
 }
@@ -218,7 +266,6 @@ const OptionPrice = styled.p`
 
   color: #898989;
 `;
-
 const PaymentConfirmationMessage = styled.div`
   display: flex;
 
@@ -226,3 +273,12 @@ const PaymentConfirmationMessage = styled.div`
     margin-left: 13.83px;
   }
 `;
+
+const PaymentContainer = styled.div`
+  h2 {
+    color: #8e8e8e;
+    font-size: 1.25rem;
+    padding-bottom: 20px;
+  }
+`;
+
