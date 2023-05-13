@@ -7,13 +7,15 @@ import { FcOk } from 'react-icons/fc';
 import useToken from '../../../hooks/useToken';
 
 import { CreditCardForm } from '../../../components/Payment/CreditCard';
-import { getUserTicket } from '../../../services/ticketApi';
+import { getUserTicket, postTicket } from '../../../services/ticketApi';
+import { toast } from 'react-toastify';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
   const [isRemote, setIsRemote] = useState(null);
   const [haveHotel, setHaveHotel] = useState(null);
   const [ticket, setTicket] = useState(undefined);
+  const [price, setPrice] = useState(undefined);
   const [isPaymentPage, setIsPaymentPage] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
 
@@ -61,9 +63,12 @@ export default function Payment() {
 
   function calculateValue() {
     const modalityValue = isRemote ? 100 : 250;
-    const hotelValue = !isRemote && haveHotel ? 250 : 0;
+    const hotelValue = !isRemote && haveHotel ? 350 : 0;
+    const price = modalityValue + hotelValue;
 
-    return modalityValue + hotelValue;
+    //usando o setPrice ocorre loop de rendenização
+    //setPrice(modalityValue + hotelValue);
+    return price;
   }
 
   function renderResume() {
@@ -71,7 +76,7 @@ export default function Payment() {
       return (
         <>
           <StyledDescription>Fechado! O total ficou em <strong>R$ {calculateValue()}</strong>. Agora é só confirmar:</StyledDescription>
-          <ButtonConfirmation>RESERVAR INGRESSO</ButtonConfirmation>
+          <ButtonConfirmation onClick={() => handleReservation()}>RESERVAR INGRESSO</ButtonConfirmation>
         </>
       );
     }
@@ -114,6 +119,27 @@ export default function Payment() {
           <StyledEnrollmentMessage>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</StyledEnrollmentMessage>
         </ParentContainer>
       );
+    }
+  }
+
+  async function handleReservation() {
+    const ticketPrices = {
+      600: 1,
+      250: 2,
+      100: 3
+    };
+
+    const ticketTypeId = ticketPrices[price] || null;
+    console.log(ticketTypeId);
+    if (ticketTypeId) {
+      let data = { ticketTypeId };
+      try {
+        const ticket = await postTicket(data, token);
+        setTicket(ticket);
+        setIsPaymentPage(true);
+      } catch (error) {
+        toast('Não foi possível finalizar a sua reserva.');
+      }
     }
   }
 
@@ -244,6 +270,7 @@ const ButtonConfirmation = styled.button`
   border: 1px solid #E0E0E0;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+  cursor: pointer;
 `;
 
 const OptionName = styled.p`
