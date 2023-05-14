@@ -14,8 +14,8 @@ export default function Payment() {
   const { enrollment } = useEnrollment();
   const [isRemote, setIsRemote] = useState(null);
   const [haveHotel, setHaveHotel] = useState(null);
-  const [ticket, setTicket] = useState(undefined);
-  const [price, setPrice] = useState(undefined);
+  const [ticket, setTicket] = useState(null);
+  const [price, setPrice] = useState(null);
   const [isPaymentPage, setIsPaymentPage] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
 
@@ -65,9 +65,6 @@ export default function Payment() {
     const modalityValue = isRemote ? 100 : 250;
     const hotelValue = !isRemote && haveHotel ? 350 : 0;
     const price = modalityValue + hotelValue;
-
-    //usando o setPrice ocorre loop de rendenização
-    //setPrice(modalityValue + hotelValue);
     return price;
   }
 
@@ -76,7 +73,7 @@ export default function Payment() {
       return (
         <>
           <StyledDescription>Fechado! O total ficou em <strong>R$ {calculateValue()}</strong>. Agora é só confirmar:</StyledDescription>
-          <ButtonConfirmation onClick={() => handleReservation()}>RESERVAR INGRESSO</ButtonConfirmation>
+          <ButtonConfirmation onClick={() => { setPrice(calculateValue()); handleReservation(); }}>RESERVAR INGRESSO</ButtonConfirmation>
         </>
       );
     }
@@ -142,47 +139,46 @@ export default function Payment() {
       }
     }
   }
-
-  useEffect(async() => {
-    const ticket = await getUserTicket(token);
-    setTicket(ticket);
-    if (ticket.status === 'PAID') {
-      setIsPaymentPage(true);
-      setIsPaid(true);
+  useEffect(() => {
+    async function fetchData() {
+      const ticket = await getUserTicket(token);
+      setTicket(ticket);
+      if (ticket.status === 'PAID') {
+        setIsPaymentPage(true);
+        setIsPaid(true);
+      }
     }
+    fetchData();
   }, []);
 
   return (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      { !isPaymentPage ?  (
+      {!isPaymentPage ? (
         <>
           {renderModalityOptions()}
           {renderHotelOptions()}
-          {renderResume()}    
-          {renderNoEnrollment()}          
+          {renderResume()}
+          {renderNoEnrollment()}
         </>) : (
         <>
           <PaymentContainer>
             {renderTicketDetails()}
           </PaymentContainer>
 
-          <StyledDescription>Pagamento</StyledDescription>
-          
+          <StyledDescription>Pagamento</StyledDescription
           {/* aqui vai o ticket.id, mas colocá-lo agora quebra o site */}
           {
             isPaid === false ? (
-              <CreditCardForm ticketId={ticket}/> 
+              <CreditCardForm ticketId={ticket} />
             ) : (
               <>
                 {renderPaymentConfirmation()}
               </>
             )
-          }         
-          
+          }
         </>
       )}
-      
     </>
   );
 }

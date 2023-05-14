@@ -33,21 +33,21 @@ export function CreditCardForm(ticketId) {
     if (name === 'number' && value.length > 19) {
       return;
     }
-  
+
     if (name === 'expiry') {
       if (isNaN(Number(value)) && !value.includes('/')) {
         return;
       }
-    
+
       if (value.length === 4 && value[2] !== '/') {
         value = `${value.slice(0, 2)}/${value.slice(2)}`;
       }
-    
+
       if (value.length > 5) {
         return;
       }
     }
-  
+
     if (name === 'cvc' && value.length > 3) {
       return;
     }
@@ -55,14 +55,15 @@ export function CreditCardForm(ticketId) {
     setPayment(form => ({ ...form, [name]: value }));
   }
 
-  const onSubmit = async(e) => {
+  /*eslint-disable */
+  const onSubmit = async (e) => {
     e.preventDefault();
     setDisabled(true);
 
     const formattedCreditCardNumber = sanitizeCreditCardNumber(payment.number);
 
     const body = {
-      ticketId: ticketId,
+      ticketId: ticketId.ticketId.id,
       cardData: {
         issuer: creditCardData.issuer,
         number: formattedCreditCardNumber,
@@ -78,7 +79,7 @@ export function CreditCardForm(ticketId) {
 
     console.log(validation);
 
-    if(validation === true) {
+    if (validation === true) {
       try {
         await postPayment(body, token);
         //setar ticket como pago
@@ -92,24 +93,24 @@ export function CreditCardForm(ticketId) {
       toast(validation);
     }
   };
-
+  /*eslint-enable */
   return (
     <>
       <FormContainer>
         {
           width > 820 && (
-            <CardContainer>          
-              <Cards 
+            <CardContainer>
+              <Cards
                 number={payment.number}
                 name={payment.name}
                 expiry={payment.expiry}
                 cvc={payment.cvc}
                 focused={payment.focused}
                 callback={(type) => setCreditCardData(type)}
-              />        
+              />
             </CardContainer>
           )
-        }             
+        }
 
         <Form onSubmit={(e) => onSubmit(e)}>
           <FormInput
@@ -136,7 +137,7 @@ export function CreditCardForm(ticketId) {
             onFocus={onInputFocus}
             disabled={disabled}
           />
-          
+
           <div>
             <FormInput
               type="tel"
@@ -162,7 +163,7 @@ export function CreditCardForm(ticketId) {
               width={'95px'}
               disabled={disabled}
             />
-          </div>          
+          </div>
         </Form>
       </FormContainer>
       <Button onClick={onSubmit} disabled={disabled}>FINALIZAR PAGAMENTO</Button>

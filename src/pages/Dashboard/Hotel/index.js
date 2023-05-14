@@ -1,7 +1,6 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { HotelCard } from '../../../components/Hotel/HotelCard';
-
 export default function Hotel() {
   return (
     <>
