@@ -65,7 +65,6 @@ export default function Payment() {
     const modalityValue = isRemote ? 100 : 250;
     const hotelValue = !isRemote && haveHotel ? 350 : 0;
     const price = modalityValue + hotelValue;
-
     return price;
   }
 
@@ -140,7 +139,6 @@ export default function Payment() {
       }
     }
   }
-
   useEffect(() => {
     async function fetchData() {
       const ticket = await getUserTicket(token);
@@ -168,8 +166,7 @@ export default function Payment() {
             {renderTicketDetails()}
           </PaymentContainer>
 
-          <StyledDescription>Pagamento</StyledDescription>
-
+          <StyledDescription>Pagamento</StyledDescription
           {/* aqui vai o ticket.id, mas colocá-lo agora quebra o site */}
           {
             isPaid === false ? (
@@ -180,10 +177,8 @@ export default function Payment() {
               </>
             )
           }
-
         </>
       )}
-
     </>
   );
 }
