@@ -1,15 +1,29 @@
 import styled from 'styled-components';
 import { BsPerson } from 'react-icons/bs';
+import { bookingRoomById } from '../../../services/bookingApi';
+import useToken from '../../../hooks/useToken';
+import { useEffect, useState } from 'react';
 
-export default function RoomSelector({ capacity, takedQty }) {
+export default function RoomSelector({ id, capacity, onClick }) {
   const person = [];
+  const [bookings, setBookings] = useState(null);
+
+  const token = useToken();
 
   for (let i = 0; i < capacity; i++) {
     person.push(<BsPerson size={20.25} />);
   }
 
+  useEffect(() => {
+    async function fetchData() {
+      const promise = await bookingRoomById(id, token);
+      setBookings(promise);
+    }
+    fetchData();
+  }, []);
+
   return (
-    <Container>
+    <Container onClick={onClick}>
       <p>101</p>
       <div>
         {person}
@@ -26,6 +40,7 @@ export const Container = styled.div`
     border-radius: 10px;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 
     p{
         margin-right: 60px;
