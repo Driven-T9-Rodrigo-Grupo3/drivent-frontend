@@ -17,7 +17,8 @@ export default function Hotel() {
   const { ticket } = useTicket();
 
   function renderError() {
-    if (ticket?.TicketType?.isRemote) {
+    console.log(ticket);
+    if (ticket?.TicketType?.isRemote || !ticket?.TicketType?.includesHotel) {
       return (
         <StyledErrorHotels>
           Sua modalidade de ingresso não inclui hospedagem <br /> Prossiga para a escolha de atividades
@@ -85,45 +86,49 @@ export default function Hotel() {
 
   return (
     <>
-      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
-      {renderError()}
-      <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-      {hotelsList.length > 0 ? (
-        <HotelsContainer>
-          {hotelsList.map((props, index) => (
-            <HotelCard
-              hotelName={props.hotel.name}
-              hotelImage={props.hotel.image}
-              roomCapacity={getCapacityDescription(props.rooms)}
-              bookedQty={getRoomLenght(props)}
-              bookedHotel={true}
-              onClick={() => { setSelectedHotel(props.rooms); setSelectedHotelId(props.hotel.id); }}
-              key={index}
-              selected={props.hotel.id === selectedHotelId}
-            />
-          ))}
-        </HotelsContainer>
-      ) : (
-        <p>Loading...</p>
-      )}
-      <div>
-        {selectedHotelId ? (
-          <>
-            <StyledMessage>Ótima pedida! Agora escolha seu quarto:</StyledMessage>
-            <RoomsContainer>
-              {selectedHotel.map((props, index) => (
-                <RoomSelector id={props.id} selected={props.id === selectedRoom} onClick={() => { setSelectedRoom(props.id); }} capacity={props.capacity} token={token} key={index} />
-              ))}
-            </RoomsContainer>
-          </>
-        ) : (<></>)}
-      </div>
-      {selectedRoom ? (
-        <ConfirmationButton onClick={() => makeBooking(selectedRoom)}>
-          RESERVAR QUARTO
-        </ConfirmationButton>
-      ) : (<></>)}
 
+      {renderError() ? renderError() : (
+        <>
+          <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
+          <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
+          {hotelsList.length > 0 ? (
+            <HotelsContainer>
+              {hotelsList.map((props, index) => (
+                <HotelCard
+                  hotelName={props.hotel.name}
+                  hotelImage={props.hotel.image}
+                  hotelRoom='101'
+                  roomCapacity={2}
+                  bookedQty={getRoomLenght(props)}
+                  bookedHotel={true}
+                  onClick={() => { setSelectedHotel(props.rooms); setSelectedHotelId(props.hotel.id); }}
+                  key={index}
+                  selected={props.hotel.id === selectedHotelId}
+                />
+              ))}
+            </HotelsContainer>
+          ) : (
+            <p>Loading...</p>
+          )}
+          <div>
+            {selectedHotelId ? (
+              <>
+                <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
+                <RoomsContainer>
+                  {selectedHotel.map((props, index) => (
+                    <RoomSelector id={props.id} selected={props.id === selectedRoom} onClick={() => { setSelectedRoom(props.id); }} capacity={props.capacity} token={token} key={index} />
+                  ))}
+                </RoomsContainer>
+              </>
+            ) : (<></>)}
+          </div>
+          {selectedRoom ? (
+            <ConfirmationButton onClick={() => makeBooking(selectedRoom)}>
+              RESERVAR QUARTO
+            </ConfirmationButton>
+          ) : (<></>)}
+        </>
+      )}
     </>
   );
 }
@@ -167,7 +172,7 @@ const StyledErrorHotels = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: auto;
+  margin-top: 35%;
 
   font-size: 20px;
   font-weight: 400;
