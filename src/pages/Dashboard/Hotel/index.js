@@ -58,6 +58,31 @@ export default function Hotel() {
     }
   }
 
+  function getCapacityDescription(rooms) {
+    let capacities = [];
+
+    for (let room of rooms) {
+      if (room.capacity === 3) {
+        capacities.push('Triple');
+      } else if (room.capacity === 2) {
+        capacities.push('Double');
+      } else if (room.capacity === 1) {
+        capacities.push('Single');
+      }
+    }
+
+    if (capacities.length === 1) {
+      return capacities[0];
+    } else if (capacities.length === 2) {
+      return capacities.join(' and ');
+    } else if (capacities.length > 2) {
+      const lastCapacity = capacities.pop();
+      return `${capacities.join(', ')} and ${lastCapacity}`;
+    } else {
+      return 'No rooms found';
+    }
+  }
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
@@ -69,8 +94,7 @@ export default function Hotel() {
             <HotelCard
               hotelName={props.hotel.name}
               hotelImage={props.hotel.image}
-              hotelRoom='101'
-              roomCapacity={2}
+              roomCapacity={getCapacityDescription(props.rooms)}
               bookedQty={getRoomLenght(props)}
               bookedHotel={true}
               onClick={() => { setSelectedHotel(props.rooms); setSelectedHotelId(props.hotel.id); }}
