@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { BsPerson } from 'react-icons/bs';
 
-export default function RoomSelector({ capacity, takedQty }) {
+export default function RoomSelector({ capacity, takedQty, onClick }) {
   const person = [];
 
   for (let i = 0; i < capacity; i++) {
@@ -9,7 +9,7 @@ export default function RoomSelector({ capacity, takedQty }) {
   }
 
   return (
-    <Container>
+    <Container onClick={onClick}>
       <p>101</p>
       <div>
         {person}

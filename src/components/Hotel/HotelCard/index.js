@@ -20,7 +20,7 @@ export const Container = styled.div`
   height: 264px;
   display: flex;
   flex-direction: column;
-  background-color: ${({ bookedHotel }) => (bookedHotel ? '#FFEED2' : '#EBEBEB')};
+  background-color: ${props => props.active ? 'FFEED2' : 'EBEBEB'};
   border-radius: 10px;
   margin-right: 19px;
   padding: 14px;

@@ -127,7 +127,6 @@ export default function Payment() {
     };
 
     const ticketTypeId = ticketPrices[price] || null;
-    console.log(ticketTypeId);
     if (ticketTypeId) {
       let data = { ticketTypeId };
       try {
