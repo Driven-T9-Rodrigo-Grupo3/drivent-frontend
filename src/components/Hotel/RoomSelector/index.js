@@ -30,7 +30,7 @@ export default function RoomSelector({ id, capacity, onClick, selected }) {
 
   return (
     <Container selected={selected} disabled={bookings.length === capacity} onClick={onClick}>
-      <p>101</p>
+      <p>{id}</p>
       <div>
         {person}
       </div>
