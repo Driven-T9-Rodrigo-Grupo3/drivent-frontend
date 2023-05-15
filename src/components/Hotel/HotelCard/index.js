@@ -5,12 +5,12 @@ export function HotelCard({ hotelName, hotelImage, hotelRoom, roomCapacity, book
     <Container bookedHotel={bookedHotel}>
       <Image alt="Hotel" src={hotelImage} />
       <Title>{hotelName}</Title>
-      <SubTitle>Quarto reservado</SubTitle>
+      <SubTitle>Tipos de acomodação:</SubTitle>
       <Description>
         {hotelRoom} ({roomCapacity === 2 ? 'Double' : roomCapacity === 3 ? 'Triple' : 'Single'})
       </Description>
-      <SubTitle>Pessoas no seu quarto</SubTitle>
-      <Description>Você e mais {bookedQty}</Description>
+      <SubTitle>Vagas disponíveis:</SubTitle>
+      <Description>{bookedQty}</Description>
     </Container>
   );
 }
