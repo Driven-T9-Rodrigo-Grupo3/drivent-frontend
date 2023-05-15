@@ -26,10 +26,10 @@ export default function RoomSelector({ id, capacity, onClick, selected }) {
     fetchData();
   }, []);
 
-  console.log(bookings);
+  const isDisabled = bookings.length === capacity;
 
   return (
-    <Container selected={selected} disabled={bookings.length === capacity} onClick={onClick}>
+    <Container selected={selected} disabled={isDisabled} onClick={onClick}>
       <p>{id}</p>
       <div>
         {person}
@@ -47,7 +47,7 @@ export const Container = styled.button`
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: ${({ selected }) => (selected ? '#FFEED2' : 'white')};
+    background: ${({ selected, disabled }) => (disabled ? '#CECECE' : selected ? '#FFEED2' : 'white')};
 
     p{
         margin-right: 60px;
