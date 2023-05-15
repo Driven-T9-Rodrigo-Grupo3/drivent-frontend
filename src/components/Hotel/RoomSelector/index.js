@@ -1,17 +1,21 @@
 import styled from 'styled-components';
-import { BsPerson } from 'react-icons/bs';
+import { BsFillPersonFill, BsPerson } from 'react-icons/bs';
 import { bookingRoomById } from '../../../services/bookingApi';
 import useToken from '../../../hooks/useToken';
 import { useEffect, useState } from 'react';
 
-export default function RoomSelector({ id, capacity, onClick }) {
+export default function RoomSelector({ id, capacity, onClick, selected }) {
   const person = [];
-  const [bookings, setBookings] = useState(null);
+  const [bookings, setBookings] = useState([]);
 
   const token = useToken();
 
-  for (let i = 0; i < capacity; i++) {
-    person.push(<BsPerson size={20.25} />);
+  for (let i = 0; i < bookings.length; i++) {
+    person.push(<BsFillPersonFill color="#FF4791" size={20.25} key={i}/>);
+  }
+
+  for (let i = 0; i < capacity - bookings.length; i++) {
+    person.push(<BsPerson size={20.25} key={i + capacity}/>);
   }
 
   useEffect(() => {
@@ -22,9 +26,11 @@ export default function RoomSelector({ id, capacity, onClick }) {
     fetchData();
   }, []);
 
+  console.log(bookings);
+
   return (
-    <Container onClick={onClick}>
-      <p>101</p>
+    <Container selected={selected} disabled={bookings.length === capacity} onClick={onClick}>
+      <p>{id}</p>
       <div>
         {person}
       </div>
@@ -32,7 +38,7 @@ export default function RoomSelector({ id, capacity, onClick }) {
   );
 }
 
-export const Container = styled.div`
+export const Container = styled.button`
     display: flex;
     width: 190px;
     height: 45px;
@@ -41,6 +47,7 @@ export const Container = styled.div`
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    background: ${({ selected }) => (selected ? '#FFEED2' : 'white')};
 
     p{
         margin-right: 60px;
