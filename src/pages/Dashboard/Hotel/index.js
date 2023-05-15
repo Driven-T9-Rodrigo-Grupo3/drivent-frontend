@@ -85,7 +85,7 @@ export default function Hotel() {
       <div>
         {selectedHotelId ? (
           <>
-            <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
+            <StyledMessage>Ótima pedida! Agora escolha seu quarto:</StyledMessage>
             <RoomsContainer>
               {selectedHotel.map((props, index) => (
                 <RoomSelector id={props.id} selected={props.id === selectedRoom} onClick={() => { setSelectedRoom(props.id); }} capacity={props.capacity} token={token} key={index} />
@@ -118,6 +118,16 @@ const RoomsContainer = styled.div`
 
 const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
+`;
+
+const StyledMessage = styled(Typography)`
+  color: #8E8E8E;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  
+  margin-top: 52px!important;
+  margin-bottom: 33px!important;
 `;
 
 const StyledDescription = styled(Typography)`
