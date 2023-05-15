@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
 import useTicket from '../../../hooks/api/useTicket';
 import RoomSelector from '../../../components/Hotel/RoomSelector';
+import { toast } from 'react-toastify';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
@@ -48,7 +49,12 @@ export default function Hotel() {
   }
 
   async function makeBooking(roomId) {
-    await bookingRoom(roomId, token);
+    try {
+      await bookingRoom(roomId, token);
+      toast('Reserva feito!');
+    } catch (error) {
+      toast('Não foi possível fazer a reserva!');
+    }
   }
 
   return (
@@ -78,7 +84,7 @@ export default function Hotel() {
         <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
         <RoomsContainer>
           {selectedHotel.map((props, index) => (
-            <RoomSelector onClick={() => {setSelectedRoom(props.id); console.log(props.id);}} capacity={props.capacity} key={index}/>
+            <RoomSelector id={props.id} onClick={() => setSelectedRoom(props.id)} capacity={props.capacity} token={token} key={index}/>
           ))}
         </RoomsContainer>
       </div>
