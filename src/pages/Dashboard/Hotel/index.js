@@ -59,8 +59,34 @@ export default function Hotel() {
     }
   }
 
+  function getCapacityDescription(rooms) {
+    let capacities = [];
+
+    for (let room of rooms) {
+      if (room.capacity === 3) {
+        capacities.push('Triple');
+      } else if (room.capacity === 2) {
+        capacities.push('Double');
+      } else if (room.capacity === 1) {
+        capacities.push('Single');
+      }
+    }
+
+    if (capacities.length === 1) {
+      return capacities[0];
+    } else if (capacities.length === 2) {
+      return capacities.join(' and ');
+    } else if (capacities.length > 2) {
+      const lastCapacity = capacities.pop();
+      return `${capacities.join(', ')} and ${lastCapacity}`;
+    } else {
+      return 'No rooms found';
+    }
+  }
+
   return (
     <>
+
       {renderError() ? renderError() : (
         <>
           <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
@@ -121,6 +147,16 @@ const RoomsContainer = styled.div`
 
 const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
+`;
+
+const StyledMessage = styled(Typography)`
+  color: #8E8E8E;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  
+  margin-top: 52px!important;
+  margin-bottom: 33px!important;
 `;
 
 const StyledDescription = styled(Typography)`
