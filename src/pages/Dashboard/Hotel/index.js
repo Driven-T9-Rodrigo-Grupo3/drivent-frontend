@@ -8,6 +8,7 @@ import useToken from '../../../hooks/useToken';
 import useTicket from '../../../hooks/api/useTicket';
 import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
+import useUpdateBooking from '../../../hooks/api/useUpdateBooking';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
