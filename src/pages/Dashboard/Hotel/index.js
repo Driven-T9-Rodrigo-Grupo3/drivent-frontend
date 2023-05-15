@@ -4,10 +4,22 @@ import { HotelCard } from '../../../components/Hotel/HotelCard';
 import { getHotels, getHotelsWithRooms } from '../../../services/hotelsApi';
 import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
+import useTicket from '../../../hooks/api/useTicket';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState(null);
+  const { ticket } = useTicket();
+
+  function renderError() {
+    if (ticket?.TicketType?.isRemote) {
+      return (
+        <StyledErrorHotels>
+        Sua modalidade de ingresso não inclui hospedagem <br/> Prossiga para a escolha de atividades
+        </StyledErrorHotels>
+      );
+    }
+  }
 
   const token = useToken();
 
@@ -37,6 +49,7 @@ export default function Hotel() {
   return (
     <>
       <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
+      {renderError()}
       <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
       {hotelsList.length > 0 ? (
         <HotelsContainer>
@@ -76,4 +89,17 @@ const StyledDescription = styled(Typography)`
   line-height: 23px;
   
   margin-bottom: 20px!important;
+`;
+
+const StyledErrorHotels = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 23px;
+  text-align: center;
+  color: #8E8E8E;
 `;
