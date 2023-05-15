@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState([]);
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const { ticket } = useTicket();
 
@@ -19,7 +20,7 @@ export default function Hotel() {
     if (ticket?.TicketType?.isRemote) {
       return (
         <StyledErrorHotels>
-        Sua modalidade de ingresso não inclui hospedagem <br/> Prossiga para a escolha de atividades
+          Sua modalidade de ingresso não inclui hospedagem <br /> Prossiga para a escolha de atividades
         </StyledErrorHotels>
       );
     }
@@ -72,8 +73,9 @@ export default function Hotel() {
               roomCapacity={2}
               bookedQty={getRoomLenght(props)}
               bookedHotel={true}
-              onClick={() => setSelectedHotel(props.rooms)}
+              onClick={() => { setSelectedHotel(props.rooms); setSelectedHotelId(props.hotel.id); }}
               key={index}
+              selected={props.hotel.id === selectedHotelId}
             />
           ))}
         </HotelsContainer>
@@ -81,16 +83,23 @@ export default function Hotel() {
         <p>Loading...</p>
       )}
       <div>
-        <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
-        <RoomsContainer>
-          {selectedHotel.map((props, index) => (
-            <RoomSelector id={props.id} onClick={() => setSelectedRoom(props.id)} capacity={props.capacity} token={token} key={index}/>
-          ))}
-        </RoomsContainer>
+        {selectedHotelId ? (
+          <>
+            <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
+            <RoomsContainer>
+              {selectedHotel.map((props, index) => (
+                <RoomSelector id={props.id} selected={props.id === selectedRoom} onClick={() => { setSelectedRoom(props.id); }} capacity={props.capacity} token={token} key={index} />
+              ))}
+            </RoomsContainer>
+          </>
+        ) : (<></>)}
       </div>
-      <ConfirmationButton onClick={() => makeBooking(selectedRoom)}>
-         RESERVAR QUARTO
-      </ConfirmationButton>
+      {selectedRoom ? (
+        <ConfirmationButton onClick={() => makeBooking(selectedRoom)}>
+          RESERVAR QUARTO
+        </ConfirmationButton>
+      ) : (<></>)}
+
     </>
   );
 }
@@ -142,7 +151,6 @@ border: 1px solid #E0E0E0;
 box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
 border-radius: 4px;
 
-font-family: 'Roboto';
 font-style: normal;
 font-weight: 400;
 font-size: 14px;

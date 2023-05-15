@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export function HotelCard({ hotelName, hotelImage, hotelRoom, roomCapacity, bookedQty, bookedHotel, onClick }) {
+export function HotelCard({ hotelName, hotelImage, hotelRoom, roomCapacity, bookedQty, bookedHotel, onClick, selected }) {
   return (
-    <Container bookedHotel={bookedHotel} onClick={onClick}>
+    <Container selected={selected} bookedHotel={bookedHotel} onClick={onClick}>
       <Image alt="Hotel" src={hotelImage} />
       <Title>{hotelName}</Title>
       <SubTitle>Tipos de acomodação:</SubTitle>
@@ -20,7 +20,7 @@ export const Container = styled.div`
   height: 264px;
   display: flex;
   flex-direction: column;
-  background-color: ${props => props.active ? 'FFEED2' : 'EBEBEB'};
+  background: ${({ selected }) => (selected ? '#FFEED2' : 'white')};
   border-radius: 10px;
   margin-right: 19px;
   padding: 14px;
