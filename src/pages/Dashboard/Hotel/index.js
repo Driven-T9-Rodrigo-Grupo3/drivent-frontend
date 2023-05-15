@@ -9,7 +9,7 @@ import RoomSelector from '../../../components/Hotel/RoomSelector';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
-  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [selectedHotel, setSelectedHotel] = useState([]);
   const { ticket } = useTicket();
 
   function renderError() {
@@ -60,7 +60,7 @@ export default function Hotel() {
               roomCapacity={2}
               bookedQty={getRoomLenght(props)}
               bookedHotel={true}
-              onClick={() => setSelectedHotel(props)}
+              onClick={() => setSelectedHotel(props.rooms)}
               key={index}
             />
           ))}
@@ -72,18 +72,9 @@ export default function Hotel() {
       <div>
         <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
         <RoomsContainer>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
-          <RoomSelector capacity={1}/>
+          {selectedHotel.map((props, index) => (
+            <RoomSelector capacity={props.capacity} key={index}/>
+          ))}
         </RoomsContainer>
       </div>
     </>
@@ -113,6 +104,10 @@ const StyledDescription = styled(Typography)`
   line-height: 23px;
   
   margin-bottom: 20px!important;
+`;
+
+const Test = styled.div`
+  background: #8E8E8E;
 `;
 
 const StyledErrorHotels = styled.div`

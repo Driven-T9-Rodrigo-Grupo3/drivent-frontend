@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export function HotelCard({ hotelName, hotelImage, hotelRoom, roomCapacity, bookedQty, bookedHotel }) {
+export function HotelCard({ hotelName, hotelImage, hotelRoom, roomCapacity, bookedQty, bookedHotel, onClick }) {
   return (
-    <Container bookedHotel={bookedHotel}>
+    <Container bookedHotel={bookedHotel} onClick={onClick}>
       <Image alt="Hotel" src={hotelImage} />
       <Title>{hotelName}</Title>
       <SubTitle>Tipos de acomodação:</SubTitle>
@@ -24,6 +24,7 @@ export const Container = styled.div`
   border-radius: 10px;
   margin-right: 19px;
   padding: 14px;
+  cursor: pointer;
 `;
 
 const Image = styled.img`
