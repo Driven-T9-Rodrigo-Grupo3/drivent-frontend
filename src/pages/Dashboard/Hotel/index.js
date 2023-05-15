@@ -4,6 +4,7 @@ import { HotelCard } from '../../../components/Hotel/HotelCard';
 import { getHotels, getHotelsWithRooms } from '../../../services/hotelsApi';
 import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
+import RoomSelector from '../../../components/Hotel/RoomSelector';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
@@ -25,14 +26,12 @@ export default function Hotel() {
       setHotelsList(finalArr);
     }
     fetchData();
-  }, []);  
+  }, []);
 
   function getRoomLenght(hotelData) {
     const { rooms } = hotelData;
     return rooms.length;
   }
-
-  console.log(hotelsList);
 
   return (
     <>
@@ -57,12 +56,37 @@ export default function Hotel() {
         <p>Loading...</p>
       )}
 
+      <div>
+        <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
+        <RoomsContainer>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+          <RoomSelector capacity={1}/>
+        </RoomsContainer>
+      </div>
     </>
   );
 }
 
 const HotelsContainer = styled.div`
   display: flex;
+`;
+
+const RoomsContainer = styled.div`
+  width: 55vw;
+  height: 12vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 const StyledTypography = styled(Typography)`
