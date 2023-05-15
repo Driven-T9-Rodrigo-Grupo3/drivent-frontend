@@ -7,7 +7,7 @@ import { FcOk } from 'react-icons/fc';
 import useToken from '../../../hooks/useToken';
 
 import { CreditCardForm } from '../../../components/Payment/CreditCard';
-import { getUserTicket, postTicket } from '../../../services/ticketApi';
+import { getTicketTypes, getUserTicket, postTicket } from '../../../services/ticketApi';
 import { toast } from 'react-toastify';
 
 export default function Payment() {
@@ -22,6 +22,7 @@ export default function Payment() {
   const token = useToken();
 
   function renderModalityOptions() {
+    console.log(ticket);
     if (enrollment) {
       return (
         <>
@@ -140,7 +141,7 @@ export default function Payment() {
   }
   useEffect(() => {
     async function fetchData() {
-      const ticket = await getUserTicket(token);
+      const ticket = await getTicketTypes(token);
       setTicket(ticket);
       if (ticket.status === 'PAID') {
         setIsPaymentPage(true);
