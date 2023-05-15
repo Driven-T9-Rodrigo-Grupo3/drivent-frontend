@@ -25,6 +25,14 @@ export default function Hotel() {
         </StyledErrorHotels>
       );
     }
+
+    if(ticket?.status !== 'PAID') {
+      return (
+        <StyledErrorHotels>
+          Você precisa ter confirmado pagamento antes <br/> de fazer a escolha de hospedagem
+        </StyledErrorHotels>
+      );
+    };
   }
 
   const token = useToken();
@@ -86,10 +94,9 @@ export default function Hotel() {
 
   return (
     <>
-
+      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
       {renderError() ? renderError() : (
         <>
-          <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
           <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
           {hotelsList.length > 0 ? (
             <HotelsContainer>
@@ -172,7 +179,7 @@ const StyledErrorHotels = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 35%;
+  margin-top: 30%;
 
   font-size: 20px;
   font-weight: 400;
