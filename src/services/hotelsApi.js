@@ -6,7 +6,7 @@ export async function getHotels(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-
+  console.log(response);
   return response.data;
 }
 
