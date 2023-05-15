@@ -1,22 +1,69 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { HotelCard } from '../../../components/Hotel/HotelCard';
+import { getHotels, getHotelsWithRooms } from '../../../services/hotelsApi';
+import { useEffect, useState } from 'react';
+import useToken from '../../../hooks/useToken';
+
 export default function Hotel() {
+  const [hotelsList, setHotelsList] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState(null);
+
+  const token = useToken();
+
+  useEffect(() => {
+    async function fetchData() {
+      const hotels = await getHotels(token);
+      const promises = hotels.map(async(hotel) => {
+        const room = await getHotelsWithRooms(hotel.id, token);
+        return {
+          hotel: hotel,
+          rooms: room.Rooms
+        };
+      });
+      const finalArr = await Promise.all(promises);
+      setHotelsList(finalArr);
+    }
+    fetchData();
+  }, []);  
+
+  function getRoomLenght(hotelData) {
+    const { rooms } = hotelData;
+    return rooms.length;
+  }
+
+  console.log(hotelsList);
+
   return (
     <>
-      <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
+      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
       <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-      <HotelCard 
-        hotelName='Driven Resort'
-        hotelImage='https://www.peninsula.com/pt/-/media/images/the-peninsula-hotels/destination/phk_exterior_1280.jpg?mw=867&hash=1291A55911B67AA850150A9FAC42D6CD'
-        hotelRoom='101'
-        roomCapacity={2}
-        bookedQty={1}
-        bookedHotel={true}
-      />
+      {hotelsList.length > 0 ? (
+        <HotelsContainer>
+          {hotelsList.map((props, index) => (
+            <HotelCard
+              hotelName={props.hotel.name}
+              hotelImage={props.hotel.image}
+              hotelRoom='101'
+              roomCapacity={2}
+              bookedQty={getRoomLenght(props)}
+              bookedHotel={true}
+              onClick={() => setSelectedHotel(props)}
+              key={index}
+            />
+          ))}
+        </HotelsContainer>
+      ) : (
+        <p>Loading...</p>
+      )}
+
     </>
   );
 }
+
+const HotelsContainer = styled.div`
+  display: flex;
+`;
 
 const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;

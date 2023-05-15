@@ -166,7 +166,7 @@ export default function Payment() {
             {renderTicketDetails()}
           </PaymentContainer>
 
-          <StyledDescription>Pagamento</StyledDescription
+          <StyledDescription>Pagamento</StyledDescription>
           {/* aqui vai o ticket.id, mas colocá-lo agora quebra o site */}
           {
             isPaid === false ? (
