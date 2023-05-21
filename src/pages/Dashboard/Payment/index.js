@@ -9,6 +9,8 @@ import useToken from '../../../hooks/useToken';
 import { CreditCardForm } from '../../../components/Payment/CreditCard';
 import { getTicketTypes, getUserTicket, postTicket } from '../../../services/ticketApi';
 import { toast } from 'react-toastify';
+import { verifyPayment } from '../../../services/paymentApi';
+import { StripeForm } from '../../../components/Payment/StripeForm';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
@@ -18,6 +20,7 @@ export default function Payment() {
   const [price, setPrice] = useState(null);
   const [isPaymentPage, setIsPaymentPage] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const token = useToken();
 
@@ -103,8 +106,8 @@ export default function Payment() {
       <>
         <StyledDescription>Ingresso escolhido</StyledDescription>
         <StyledTicket>
-          <OptionName>{ticketType()}</OptionName>
-          <OptionPrice>R$ {calculateValue()}</OptionPrice>
+          <OptionName>{ticket.TicketType.name}</OptionName>
+          <OptionPrice>R$ {ticket.TicketType.price}</OptionPrice>
         </StyledTicket>
       </>
     );
@@ -141,11 +144,16 @@ export default function Payment() {
   }
   useEffect(() => {
     async function fetchData() {
-      const ticket = await getTicketTypes(token);
+      const ticket = await getUserTicket(token);
+      const hasPaid = await verifyPayment(token);
       setTicket(ticket);
-      if (ticket.status === 'PAID') {
+      console.log(ticket);
+      console.log(hasPaid);
+      if (ticket) {
         setIsPaymentPage(true);
-        setIsPaid(true);
+        if (hasPaid) {
+          setIsPaid(true);
+        }
       }
     }
     fetchData();
@@ -167,10 +175,9 @@ export default function Payment() {
           </PaymentContainer>
 
           <StyledDescription>Pagamento</StyledDescription>
-          {/* aqui vai o ticket.id, mas colocá-lo agora quebra o site */}
           {
             isPaid === false ? (
-              <CreditCardForm ticketId={ticket} />
+              <StripeForm />
             ) : (
               <>
                 {renderPaymentConfirmation()}
