@@ -8,7 +8,8 @@ import useToken from '../../../hooks/useToken';
 import useTicket from '../../../hooks/api/useTicket';
 import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
-import useUpdateBooking from '../../../hooks/api/useUpdateBooking';
+import useBooking from '../../../hooks/api/useBoking';
+import { updateBooking } from '../../../services/bookingApi';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
@@ -16,9 +17,30 @@ export default function Hotel() {
   const [selectedHotelId, setSelectedHotelId] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const { ticket } = useTicket();
+  const { getBooking } = useBooking();
+  const [bookingData, setBookingData] = useState(null);
+  const [upBooking, setUpBooking] = useState(false);
+  const token = useToken();
+
+  useEffect(() => {
+    async function fetchData() {
+      const hotels = await getHotels(token);
+      const promises = hotels.map(async(hotel) => {
+        const room = await getHotelsWithRooms(hotel.id, token);
+        return {
+          hotel: hotel,
+          rooms: room.Rooms
+        };
+      });
+      const finalArr = await Promise.all(promises);
+      setHotelsList(finalArr);
+      setBookingData(await getBooking());
+    }
+    fetchData();
+  }, []);
 
   function renderError() {
-    console.log(ticket);
+    console.log(bookingData);
     if (ticket?.TicketType?.isRemote || !ticket?.TicketType?.includesHotel) {
       return (
         <StyledErrorHotels>
@@ -36,24 +58,6 @@ export default function Hotel() {
     };
   }
 
-  const token = useToken();
-
-  useEffect(() => {
-    async function fetchData() {
-      const hotels = await getHotels(token);
-      const promises = hotels.map(async(hotel) => {
-        const room = await getHotelsWithRooms(hotel.id, token);
-        return {
-          hotel: hotel,
-          rooms: room.Rooms
-        };
-      });
-      const finalArr = await Promise.all(promises);
-      setHotelsList(finalArr);
-    }
-    fetchData();
-  }, []);
-
   function getRoomLenght(hotelData) {
     const { rooms } = hotelData;
     return rooms.length;
@@ -61,8 +65,13 @@ export default function Hotel() {
 
   async function makeBooking(roomId) {
     try {
-      await bookingRoom(roomId, token);
-      toast('Reserva feito!');
+      if(!bookingData) {
+        await bookingRoom(roomId, token);
+        toast('Reserva feito!');
+      }else{
+        await updateBooking(bookingData.id, roomId, token);
+        toast('Reserva refeita!');
+      }
     } catch (error) {
       toast('Não foi possível fazer a reserva!');
     }
@@ -93,23 +102,41 @@ export default function Hotel() {
     }
   }
 
+  function renderSummaryHotel() {
+    return(
+      <>
+        <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
+        <HotelCard
+        />
+        <ConfirmationButton onClick={() => setUpBooking(true)}>
+          TROCAR DE QUARTO
+        </ConfirmationButton>
+      </>
+    );
+  }
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
-      {renderError() ? renderError() : (
+      {renderError() ? (
+        renderError()
+      ) : !bookingData || upBooking ? (
         <>
-          <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
+          <StyledDescription>Primeiro, escolha seu hotel</StyledDescription>
           {hotelsList.length > 0 ? (
             <HotelsContainer>
               {hotelsList.map((props, index) => (
                 <HotelCard
                   hotelName={props.hotel.name}
                   hotelImage={props.hotel.image}
-                  hotelRoom='101'
+                  hotelRoom="101"
                   roomCapacity={2}
                   bookedQty={getRoomLenght(props)}
                   bookedHotel={true}
-                  onClick={() => { setSelectedHotel(props.rooms); setSelectedHotelId(props.hotel.id); }}
+                  onClick={() => {
+                    setSelectedHotel(props.rooms);
+                    setSelectedHotelId(props.hotel.id);
+                  }}
                   key={index}
                   selected={props.hotel.id === selectedHotelId}
                 />
@@ -124,21 +151,36 @@ export default function Hotel() {
                 <StyledDescription>Ótima pedida! Agora escolha seu quarto:</StyledDescription>
                 <RoomsContainer>
                   {selectedHotel.map((props, index) => (
-                    <RoomSelector id={props.id} selected={props.id === selectedRoom} onClick={() => { setSelectedRoom(props.id); }} capacity={props.capacity} token={token} key={index} />
+                    <RoomSelector
+                      id={props.id}
+                      selected={props.id === selectedRoom}
+                      onClick={() => {
+                        setSelectedRoom(props.id);
+                      }}
+                      capacity={props.capacity}
+                      token={token}
+                      key={index}
+                    />
                   ))}
                 </RoomsContainer>
               </>
-            ) : (<></>)}
+            ) : (
+              <></>
+            )}
           </div>
           {selectedRoom ? (
             <ConfirmationButton onClick={() => makeBooking(selectedRoom)}>
               RESERVAR QUARTO
             </ConfirmationButton>
-          ) : (<></>)}
+          ) : (
+            <></>
+          )}
         </>
+      ) : (
+        renderSummaryHotel()
       )}
     </>
-  );
+  );  
 }
 
 const HotelsContainer = styled.div`
