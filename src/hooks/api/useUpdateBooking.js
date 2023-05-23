@@ -5,16 +5,17 @@ import * as bookingApi from '../../services/bookingApi';
 
 export default function useUpdateBooking(bookingId, roomId) {
   const token = useToken();
+  console.log(bookingId, roomId, token);
 
   const {
     loading: updateBookingLoading,
     error: updateBookingError,
-    act: updateBooking,
-  } = useAsync( () => bookingApi.updateBooking({ bookingId, roomId, token }));
+    act: putBooking,
+  } = useAsync( () => bookingApi.updateBooking({ bookingId, roomId, token }), false);
 
   return {
     updateBookingLoading,
     updateBookingError,
-    updateBooking,
+    putBooking,
   };
 }

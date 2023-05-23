@@ -38,7 +38,7 @@ export default function OAuth() {
 
   useEffect(() => {
     getUserCredentials();
-  }, [])
+  }, []);
   return (
     <OAuthButtons>
       <button onClick={githubRedirect}>

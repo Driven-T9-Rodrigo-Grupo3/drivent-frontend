@@ -8,7 +8,7 @@ import useToken from '../../../hooks/useToken';
 import useTicket from '../../../hooks/api/useTicket';
 import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
-import useBooking from '../../../hooks/api/useBoking';
+import useBooking from '../../../hooks/api/useBooking';
 import { updateBooking } from '../../../services/bookingApi';
 
 export default function Hotel() {
@@ -21,6 +21,7 @@ export default function Hotel() {
   const [bookingData, setBookingData] = useState(null);
   const [upBooking, setUpBooking] = useState(false);
   const token = useToken();
+  const [hotelSummary, setHotelSummary] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -39,8 +40,20 @@ export default function Hotel() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (bookingData) {
+      async function fetchHotelSummary() {
+        const hotelData = await getHotelsWithRooms(bookingData.Room.hotelId, token);
+        setHotelSummary(hotelData);
+        console.log(hotelData);
+        console.log(bookingData);
+      }
+  
+      fetchHotelSummary();
+    }
+  }, [bookingData]);
+
   function renderError() {
-    console.log(bookingData);
     if (ticket?.TicketType?.isRemote || !ticket?.TicketType?.includesHotel) {
       return (
         <StyledErrorHotels>
@@ -103,16 +116,20 @@ export default function Hotel() {
   }
 
   function renderSummaryHotel() {
-    return(
-      <>
-        <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-        <HotelCard
-        />
-        <ConfirmationButton onClick={() => setUpBooking(true)}>
-          TROCAR DE QUARTO
-        </ConfirmationButton>
-      </>
-    );
+    if(bookingData && hotelSummary) {
+      return(
+        <>
+          <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
+          <HotelCard
+            hotelName={hotelSummary.name}
+            hotelImage={hotelSummary.image}
+          />
+          <ConfirmationButton onClick={() => setUpBooking(true)}>
+            TROCAR DE QUARTO
+          </ConfirmationButton>
+        </>
+      );
+    }
   }
 
   return (
