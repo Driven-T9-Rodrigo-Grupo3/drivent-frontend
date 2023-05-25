@@ -1,17 +1,31 @@
 import styled from 'styled-components';
 import { IoEnterOutline } from 'react-icons/io5';
+import { bookingActivity } from '../../../services/activitesApi';
+import useToken from '../../../hooks/useToken';
+import { toast } from 'react-toastify';
 
-export function Activity({ name, time }) {
+export function Activity({ id, name, time, capacity }) {
+  const token = useToken();
+
+  async function makeBooking() {
+    try {
+      await bookingActivity(id, token);
+      toast('Inscrição feita!');
+    } catch (error) {
+      toast('Não foi possível fazer a inscrição!');
+    }
+  }
+
   return (
     <Container>
       <div>
         <NameActivity>{name}</NameActivity>
         <TimeActivity>{time}</TimeActivity>
       </div>
-      <Line/>
-      <AcceptActivity>
-        <IoEnterOutline size={30} color='#078632'/>
-        <p>27 vagas</p>
+      <Line />
+      <AcceptActivity onClick={makeBooking}>
+        <IoEnterOutline size={30} color='#078632' />
+        <p>{capacity} vagas</p>
       </AcceptActivity>
     </Container>
   );

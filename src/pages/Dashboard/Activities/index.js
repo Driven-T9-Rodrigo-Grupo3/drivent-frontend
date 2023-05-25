@@ -1,8 +1,23 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { Activity } from '../../../components/Activities/Activity';
+import { useEffect, useState } from 'react';
+import { getActivities } from '../../../services/activitesApi';
+import useToken from '../../../hooks/useToken';
 
 export default function Activities() {
+  const [activitiesList, setActivitiesList] = useState([]);
+
+  const token = useToken();
+
+  useEffect(() => {
+    async function fetchData() {
+      const activities = await getActivities(token);
+      setActivitiesList(activities);
+    }
+    fetchData();
+  }, []);
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
@@ -16,25 +31,25 @@ export default function Activities() {
         <ActivitesContainer>
           <Location>Auditório Principal</Location>
           <ActivitesBorder>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
+            {activitiesList.map((props, index) => (
+              <Activity
+                id={props.id}
+                name={props.name}
+                time="09:00 - 10:00"
+                capacity={props.capacity}
+                key={index}
+              />
+            ))}
           </ActivitesBorder>
         </ActivitesContainer>
         <ActivitesContainer>
           <Location>Auditório Lateral</Location>
           <ActivitesBorder>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
           </ActivitesBorder>
         </ActivitesContainer>
         <ActivitesContainer>
           <Location>Sala de Workshop</Location>
           <ActivitesBorder>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
-            <Activity name={'Minecraft: montando o PC ideal'} time={'09:00 - 10:00'}/>
           </ActivitesBorder>
         </ActivitesContainer>
       </ActivitesOptions>
