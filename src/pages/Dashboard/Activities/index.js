@@ -6,17 +6,23 @@ import { getActivities } from '../../../services/activitesApi';
 import useToken from '../../../hooks/useToken';
 
 export default function Activities() {
-  const [activitiesList, setActivitiesList] = useState([]);
+  const [activitiesMainList, setActivitiesMainList] = useState([]);
+  const [activitiesSideList, setActivitiesSideList] = useState([]);
+  const [activitiesWorkshopList, setActivitiesWorkshopList] = useState([]);
 
   const token = useToken();
 
   useEffect(() => {
     async function fetchData() {
       const activities = await getActivities(token);
-      setActivitiesList(activities);
+      setActivitiesMainList(activities.filter(obj => obj.location === 'MAIN'));
+      setActivitiesSideList(activities.filter(obj => obj.location === 'SIDE'));
+      setActivitiesWorkshopList(activities.filter(obj => obj.location === 'WORKSHOP'));
     }
     fetchData();
   }, []);
+
+  console.log(activitiesMainList);
 
   return (
     <>
@@ -31,7 +37,7 @@ export default function Activities() {
         <ActivitesContainer>
           <Location>Auditório Principal</Location>
           <ActivitesBorder>
-            {activitiesList.map((props, index) => (
+            {activitiesMainList.map((props, index) => (
               <Activity
                 id={props.id}
                 name={props.name}
@@ -45,11 +51,29 @@ export default function Activities() {
         <ActivitesContainer>
           <Location>Auditório Lateral</Location>
           <ActivitesBorder>
+            {activitiesSideList.map((props, index) => (
+              <Activity
+                id={props.id}
+                name={props.name}
+                time="09:00 - 10:00"
+                capacity={props.capacity}
+                key={index}
+              />
+            ))}
           </ActivitesBorder>
         </ActivitesContainer>
         <ActivitesContainer>
           <Location>Sala de Workshop</Location>
           <ActivitesBorder>
+            {activitiesWorkshopList.map((props, index) => (
+              <Activity
+                id={props.id}
+                name={props.name}
+                time="09:00 - 10:00"
+                capacity={props.capacity}
+                key={index}
+              />
+            ))}
           </ActivitesBorder>
         </ActivitesContainer>
       </ActivitesOptions>

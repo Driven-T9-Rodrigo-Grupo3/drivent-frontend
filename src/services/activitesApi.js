@@ -10,13 +10,23 @@ export async function getActivities(token) {
   return response.data;
 }
 
-export async function getBookingActivityByUser(activityId, token) {
-  const response = await api.get(`/activities/${activityId}`, {
+export async function getBookingActivityByUser(token) {
+  const response = await api.get('/activities/user', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
   
+  return response.data;
+}
+
+export async function getBookingsActivity(activityId, token) {
+  const response = await api.get(`/activities/${activityId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+    
   return response.data;
 }
 

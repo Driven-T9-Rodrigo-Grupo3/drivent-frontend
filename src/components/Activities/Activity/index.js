@@ -1,45 +1,48 @@
 import styled from 'styled-components';
 import { IoEnterOutline } from 'react-icons/io5';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
-import { bookingActivity, getBookingActivityByUser } from '../../../services/activitesApi';
+import { bookingActivity, getBookingActivityByUser, getBookingsActivity } from '../../../services/activitesApi';
 import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 
 export function Activity({ id, name, time, capacity }) {
-  const [haveBooking, setHaveBooking] = useState(null);
+  const [userBooking, setUserBooking] = useState(null);
+  const [bookingList, setBookingList] = useState([]);
+  const [avaliableCapacity, setAvaliableCapacity] = useState(capacity);
 
   const token = useToken();
 
   useEffect(() => {
     async function fetchData() {
-      const activities = await getBookingActivityByUser(id, token);
-      setHaveBooking(activities);
+      const activities = await getBookingActivityByUser(token);
+      setUserBooking(activities);
+      const bookings = await getBookingsActivity(id, token);
+      setBookingList(bookings);
+      setAvaliableCapacity(avaliableCapacity - bookings.length);
     }
     fetchData();
   }, []);
-
-  console.log(haveBooking);
 
   async function makeBooking() {
     try {
       await bookingActivity(id, token);
       toast('Inscrição feita!');
-      setHaveBooking(true);
+      setUserBooking(true);
     } catch (error) {
       toast('Não foi possível fazer a inscrição!');
     }
   }
 
   return (
-    <Container haveBooking={haveBooking}>
+    <Container haveBooking={userBooking}>
       <div>
         <NameActivity>{name}</NameActivity>
         <TimeActivity>{time}</TimeActivity>
       </div>
       <Line />
       <AcceptActivity>
-        {haveBooking ? (
+        {userBooking ? (
           <>
             <AiOutlineCheckCircle size={30} color='#078632' />
             <p>Inscrito</p>
@@ -48,7 +51,7 @@ export function Activity({ id, name, time, capacity }) {
           (
             <>
               <IoEnterOutline onClick={makeBooking} size={30} color='#078632' />
-              <p>{capacity} vagas</p>
+              <p>{avaliableCapacity} vagas</p>
             </>
           )}
 
