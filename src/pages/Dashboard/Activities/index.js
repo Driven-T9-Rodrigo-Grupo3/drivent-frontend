@@ -29,13 +29,25 @@ export default function Activities() {
     fetchData();
   }, []);
 
+  function renderDate(date) {
+    const [day, month] = date.split('/');
+    const year = new Date().getFullYear(); // Assumes current year
+  
+    const formattedDate = new Date(`${year}-${month}-${day}`);
+    const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
+  
+    const text = formattedDate.toLocaleDateString('pt-BR', options);
+
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
       <StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>
       <DaysOptions>
         {activitiesDaysList.map((day, index) => (
-          <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{day}</StyledButton>
+          <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{renderDate(day)}</StyledButton>
         ))}
       </DaysOptions>
       <ActivitesOptions>
