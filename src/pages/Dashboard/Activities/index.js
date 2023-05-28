@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { getActivities } from '../../../services/activitesApi';
 import useToken from '../../../hooks/useToken';
 import { ActivitiesDay } from '../../../components/Activities/ActivitiesDay';
+import useTicket from '../../../hooks/api/useTicket';
 
 export default function Activities() {
   const [activitiesDaysList, setActivitiesDaysList] = useState([]);
   const [daySelected, setDaySelected] = useState(null);
 
   const token = useToken();
+  const { ticket } = useTicket();
 
   useEffect(() => {
     async function fetchData() {
@@ -30,28 +32,52 @@ export default function Activities() {
 
   function renderDate(date) {
     const [day, month] = date.split('/');
-    const year = new Date().getFullYear(); // Assumes current year
-  
+    const year = new Date().getFullYear();
+
     const formattedDate = new Date(`${year}-${month}-${day}`);
     const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
-  
+
     const text = formattedDate.toLocaleDateString('pt-BR', options);
 
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
 
+  function renderError() {
+    if (ticket?.TicketType?.isRemote || !ticket?.TicketType?.includesHotel) {
+      return (
+        <StyledError>
+          Sua modalidade de ingresso não necessita escolher <br /> atividade. Você terá acesso a todas as atividades.
+        </StyledError>
+      );
+    }
+  }
+
+  if (ticket?.status !== 'PAID') {
+    return (
+      <StyledError>
+        Você precisa ter confirmado pagamento antes <br /> de fazer a escolha de atividades
+      </StyledError>
+    );
+  };
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
-      {!daySelected ? (<StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>) : (<></>)}
-      <DaysOptions>
-        {activitiesDaysList.map((day, index) => (
-          <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{renderDate(day)}</StyledButton>
-        ))}
-      </DaysOptions>
-      {daySelected ? (<ActivitesOptions>
-        <ActivitiesDay day={daySelected} />
-      </ActivitesOptions>) : (<></>)}
+      {renderError() ? (
+        renderError()
+      ) : (
+        <>
+          {!daySelected ? (<StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>) : (<></>)}
+          <DaysOptions>
+            {activitiesDaysList.map((day, index) => (
+              <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{renderDate(day)}</StyledButton>
+            ))}
+          </DaysOptions>
+          {daySelected ? (<ActivitesOptions>
+            <ActivitiesDay day={daySelected} />
+          </ActivitesOptions>) : (<></>)}
+        </>
+      )}
     </>
   );
 }
@@ -98,4 +124,17 @@ const ActivitesOptions = styled.div`
   margin-top: 60px;
   display: flex;
   justify-content: space-between;
+`;
+
+const StyledError = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30%;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 23px;
+  text-align: center;
+  color: #8E8E8E;
 `;
