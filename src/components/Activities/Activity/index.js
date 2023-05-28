@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { IoEnterOutline } from 'react-icons/io5';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
+import { ImCancelCircle } from 'react-icons/im';
 import { bookingActivity, getBookingActivityByUser, getBookingsActivity } from '../../../services/activitesApi';
 import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
@@ -8,17 +9,15 @@ import { useEffect, useState } from 'react';
 
 export function Activity({ id, name, time, capacity }) {
   const [userBooking, setUserBooking] = useState(null);
-  const [bookingList, setBookingList] = useState([]);
   const [avaliableCapacity, setAvaliableCapacity] = useState(capacity);
 
   const token = useToken();
 
   useEffect(() => {
     async function fetchData() {
-      const activities = await getBookingActivityByUser(token);
+      const activities = await getBookingActivityByUser(id, token);
       setUserBooking(activities);
       const bookings = await getBookingsActivity(id, token);
-      setBookingList(bookings);
       setAvaliableCapacity(avaliableCapacity - bookings.length);
     }
     fetchData();
@@ -47,14 +46,19 @@ export function Activity({ id, name, time, capacity }) {
             <AiOutlineCheckCircle size={30} color='#078632' />
             <p>Inscrito</p>
           </>
-        ) :
-          (
+        ) : (
+          avaliableCapacity > 0 ? (
             <>
               <IoEnterOutline onClick={makeBooking} size={30} color='#078632' />
               <p>{avaliableCapacity} vagas</p>
             </>
-          )}
-
+          ) : (
+            <>
+              <ImCancelCircle size={30} color='#CC6666' />
+              <p style={{ color: '#CC6666', color: '#CC6666' }}>Esgotado</p>
+            </>
+          )
+        )}
       </AcceptActivity>
     </Container>
   );
