@@ -55,7 +55,7 @@ export function Activity({ id, name, time, capacity }) {
           ) : (
             <>
               <ImCancelCircle size={30} color='#CC6666' />
-              <p style={{ color: '#CC6666', color: '#CC6666' }}>Esgotado</p>
+              <p style={{ color: '#CC6666' }}>Esgotado</p>
             </>
           )
         )}
