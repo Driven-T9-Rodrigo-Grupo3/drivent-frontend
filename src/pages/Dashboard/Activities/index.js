@@ -1,81 +1,45 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
-import { Activity } from '../../../components/Activities/Activity';
 import { useEffect, useState } from 'react';
 import { getActivities } from '../../../services/activitesApi';
 import useToken from '../../../hooks/useToken';
+import { ActivitiesDay } from '../../../components/Activities/ActivitiesDay';
 
 export default function Activities() {
-  const [activitiesMainList, setActivitiesMainList] = useState([]);
-  const [activitiesSideList, setActivitiesSideList] = useState([]);
-  const [activitiesWorkshopList, setActivitiesWorkshopList] = useState([]);
+  const [activitiesDaysList, setActivitiesDaysList] = useState([]);
+  const [daySelected, setDaySelected] = useState(' ');
 
   const token = useToken();
 
   useEffect(() => {
     async function fetchData() {
       const activities = await getActivities(token);
-      setActivitiesMainList(activities.filter(obj => obj.location === 'MAIN'));
-      setActivitiesSideList(activities.filter(obj => obj.location === 'SIDE'));
-      setActivitiesWorkshopList(activities.filter(obj => obj.location === 'WORKSHOP'));
+      const filteredArray = activities.filter((obj, index, self) =>
+        index === self.findIndex((o) => o.dateTime === obj.dateTime)
+      );
+
+      const formattedDateTimeArray = filteredArray.map(obj => {
+        const dateTime = new Date(obj.dateTime);
+        const formattedDateTime = dateTime.toLocaleDateString('pt-BR', { month: '2-digit', day: '2-digit' });
+        return formattedDateTime;
+      });
+      setDaySelected(formattedDateTimeArray[0]);
+      setActivitiesDaysList(formattedDateTimeArray);
     }
     fetchData();
   }, []);
-
-  console.log(activitiesMainList);
 
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
       <StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>
       <DaysOptions>
-        <StyledButton>Sexta, 22/10</StyledButton>
-        <StyledButton>Sábado, 23/10</StyledButton>
-        <StyledButton>Domingo, 24/10</StyledButton>
+        {activitiesDaysList.map((day, index) => (
+          <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{day}</StyledButton>
+        ))}
       </DaysOptions>
       <ActivitesOptions>
-        <ActivitesContainer>
-          <Location>Auditório Principal</Location>
-          <ActivitesBorder>
-            {activitiesMainList.map((props, index) => (
-              <Activity
-                id={props.id}
-                name={props.name}
-                time="09:00 - 10:00"
-                capacity={props.capacity}
-                key={index}
-              />
-            ))}
-          </ActivitesBorder>
-        </ActivitesContainer>
-        <ActivitesContainer>
-          <Location>Auditório Lateral</Location>
-          <ActivitesBorder>
-            {activitiesSideList.map((props, index) => (
-              <Activity
-                id={props.id}
-                name={props.name}
-                time="09:00 - 10:00"
-                capacity={props.capacity}
-                key={index}
-              />
-            ))}
-          </ActivitesBorder>
-        </ActivitesContainer>
-        <ActivitesContainer>
-          <Location>Sala de Workshop</Location>
-          <ActivitesBorder>
-            {activitiesWorkshopList.map((props, index) => (
-              <Activity
-                id={props.id}
-                name={props.name}
-                time="09:00 - 10:00"
-                capacity={props.capacity}
-                key={index}
-              />
-            ))}
-          </ActivitesBorder>
-        </ActivitesContainer>
+        <ActivitiesDay day={daySelected} />
       </ActivitesOptions>
     </>
   );
@@ -98,7 +62,7 @@ const StyledButton = styled.button`
   width: 131px;
   height: 37px;
 
-  background: #E0E0E0;
+  background: ${({ selected }) => (selected ? '#FFD37D' : '#E0E0E0')};
   border: 1px solid #E0E0E0;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
@@ -110,6 +74,7 @@ const StyledButton = styled.button`
   text-align: center;
 
   color: #000000;
+  cursor: pointer;
 `;
 
 const DaysOptions = styled.div`
@@ -122,27 +87,4 @@ const ActivitesOptions = styled.div`
   margin-top: 60px;
   display: flex;
   justify-content: space-between;
-`;
-
-const ActivitesContainer = styled.div`
-  div{
-    margin-top: 10px;
-  }
-`;
-
-const ActivitesBorder = styled.div`
-  width: 285px;
-  height: 392px;
-  border: 1px solid #D7D7D7;
-`;
-
-const Location = styled.p`
-  font-style: normal;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 20px;
-
-  text-align: center;
-
-  color: #7B7B7B;
 `;
