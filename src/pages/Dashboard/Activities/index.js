@@ -7,7 +7,7 @@ import { ActivitiesDay } from '../../../components/Activities/ActivitiesDay';
 
 export default function Activities() {
   const [activitiesDaysList, setActivitiesDaysList] = useState([]);
-  const [daySelected, setDaySelected] = useState(' ');
+  const [daySelected, setDaySelected] = useState(null);
 
   const token = useToken();
 
@@ -23,7 +23,6 @@ export default function Activities() {
         const formattedDateTime = dateTime.toLocaleDateString('pt-BR', { month: '2-digit', day: '2-digit' });
         return formattedDateTime;
       });
-      setDaySelected(formattedDateTimeArray[0]);
       setActivitiesDaysList(formattedDateTimeArray);
     }
     fetchData();
@@ -44,15 +43,15 @@ export default function Activities() {
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
-      <StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>
+      {!daySelected ? (<StyledDescription>Primeiro, filtre pelo dia do evento:</StyledDescription>) : (<></>)}
       <DaysOptions>
         {activitiesDaysList.map((day, index) => (
           <StyledButton onClick={() => setDaySelected(day)} selected={day === daySelected} key={index}>{renderDate(day)}</StyledButton>
         ))}
       </DaysOptions>
-      <ActivitesOptions>
+      {daySelected ? (<ActivitesOptions>
         <ActivitiesDay day={daySelected} />
-      </ActivitesOptions>
+      </ActivitesOptions>) : (<></>)}
     </>
   );
 }
