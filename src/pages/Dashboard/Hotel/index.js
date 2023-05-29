@@ -11,6 +11,7 @@ import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
 import useBooking from '../../../hooks/api/useBooking';
 import { updateBooking } from '../../../services/bookingApi';
+import { render } from '@testing-library/react';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
@@ -23,6 +24,7 @@ export default function Hotel() {
   const [upBooking, setUpBooking] = useState(false);
   const token = useToken();
   const [hotelSummary, setHotelSummary] = useState(null);
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -46,8 +48,7 @@ export default function Hotel() {
       async function fetchHotelSummary() {
         const hotelData = await getHotelsWithRooms(bookingData.Room.hotelId, token);
         setHotelSummary(hotelData);
-        console.log(hotelData);
-        console.log(bookingData);
+        setShowSummary(true);
       }
   
       fetchHotelSummary();
@@ -86,6 +87,8 @@ export default function Hotel() {
         await updateBooking(bookingData.id, roomId, token);
         toast('Reserva refeita!');
       }
+
+      setShowSummary(true);
     } catch (error) {
       toast('Não foi possível fazer a reserva!');
     }
@@ -117,31 +120,27 @@ export default function Hotel() {
   }
 
   function renderSummaryHotel() {
-    console.log(bookingData, hotelSummary);
-    if(bookingData && hotelSummary) {
-      return(
-        <>
-          <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-          <SummaryHotelCard
-            hotelName={hotelSummary.name}
-            hotelImage={hotelSummary.image}
-            roomId={bookingData.Room.id}
-            roomQty={bookingData.Room.name}
-          />
-          <ConfirmationButton onClick={() => setUpBooking(true)}>
-            TROCAR DE QUARTO
-          </ConfirmationButton>
-        </>
-      );
-    }
+    return(
+      <>
+        <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
+        <SummaryHotelCard
+          hotelName={hotelSummary.name}
+          hotelImage={hotelSummary.image}
+          roomId={bookingData.Room.id}
+          roomQty={bookingData.Room.name}
+        />
+        <ConfirmationButton onClick={() => (setUpBooking(true), setShowSummary(false)) }>
+          TROCAR DE QUARTO
+        </ConfirmationButton>
+      </>
+    );
   }
 
-  return (
-    <>
-      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
-      {renderError() ? (
-        renderError()
-      ) : !bookingData || upBooking ? (
+  function renderHotels() {
+    if(bookingData && hotelSummary && showSummary) {
+      return renderSummaryHotel();
+    }else if((!bookingData || upBooking) && !showSummary ) {
+      return(
         <>
           <StyledDescription>Primeiro, escolha seu hotel</StyledDescription>
           {hotelsList.length > 0 ? (
@@ -197,9 +196,14 @@ export default function Hotel() {
             <></>
           )}
         </>
-      ) : (
-        renderSummaryHotel()
-      )}
+      );
+    }
+  }
+
+  return (
+    <>
+      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
+      {renderError() ? renderError() : renderHotels()}
     </>
   );  
 }
