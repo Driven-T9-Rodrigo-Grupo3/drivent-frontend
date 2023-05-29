@@ -61,7 +61,7 @@ export function ActivitiesDay({ day }) {
           <Activity
             id={props.id}
             name={props.name}
-            time="09:00 - 10:00"
+            time={timeRender(props.dateTime, props.hoursDuration)}
             capacity={props.capacity}
             key={index}
           />
@@ -75,7 +75,7 @@ export function ActivitiesDay({ day }) {
           <Activity
             id={props.id}
             name={props.name}
-            time="09:00 - 10:00"
+            time={timeRender(props.dateTime, props.hoursDuration)}
             capacity={props.capacity}
             key={index}
           />
