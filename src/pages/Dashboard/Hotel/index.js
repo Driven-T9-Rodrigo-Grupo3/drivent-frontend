@@ -1,6 +1,7 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { HotelCard } from '../../../components/Hotel/HotelCard';
+import { SummaryHotelCard } from '../../../components/Hotel/HotelCard';
 import { getHotels, getHotelsWithRooms } from '../../../services/hotelsApi';
 import { bookingRoom } from '../../../services/bookingApi';
 import { useEffect, useState } from 'react';
@@ -8,7 +9,7 @@ import useToken from '../../../hooks/useToken';
 import useTicket from '../../../hooks/api/useTicket';
 import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
-import useBooking from '../../../hooks/api/useBoking';
+import useBooking from '../../../hooks/api/useBooking';
 import { updateBooking } from '../../../services/bookingApi';
 
 export default function Hotel() {
@@ -21,6 +22,8 @@ export default function Hotel() {
   const [bookingData, setBookingData] = useState(null);
   const [upBooking, setUpBooking] = useState(false);
   const token = useToken();
+  const [hotelSummary, setHotelSummary] = useState(null);
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -39,8 +42,19 @@ export default function Hotel() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (bookingData) {
+      async function fetchHotelSummary() {
+        const hotelData = await getHotelsWithRooms(bookingData.Room.hotelId, token);
+        setHotelSummary(hotelData);
+        setShowSummary(true);
+      }
+  
+      fetchHotelSummary();
+    }
+  }, [bookingData]);
+
   function renderError() {
-    console.log(bookingData);
     if (ticket?.TicketType?.isRemote || !ticket?.TicketType?.includesHotel) {
       return (
         <StyledErrorHotels>
@@ -72,6 +86,8 @@ export default function Hotel() {
         await updateBooking(bookingData.id, roomId, token);
         toast('Reserva refeita!');
       }
+
+      setShowSummary(true);
     } catch (error) {
       toast('Não foi possível fazer a reserva!');
     }
@@ -106,21 +122,24 @@ export default function Hotel() {
     return(
       <>
         <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-        <HotelCard
+        <SummaryHotelCard
+          hotelName={hotelSummary.name}
+          hotelImage={hotelSummary.image}
+          roomId={bookingData.Room.id}
+          roomQty={bookingData.Room.name}
         />
-        <ConfirmationButton onClick={() => setUpBooking(true)}>
+        <ConfirmationButton onClick={() => (setUpBooking(true), setShowSummary(false)) }>
           TROCAR DE QUARTO
         </ConfirmationButton>
       </>
     );
   }
 
-  return (
-    <>
-      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
-      {renderError() ? (
-        renderError()
-      ) : !bookingData || upBooking ? (
+  function renderHotels() {
+    if(bookingData && hotelSummary && showSummary) {
+      return renderSummaryHotel();
+    }else if((!bookingData || upBooking) && !showSummary ) {
+      return(
         <>
           <StyledDescription>Primeiro, escolha seu hotel</StyledDescription>
           {hotelsList.length > 0 ? (
@@ -176,9 +195,14 @@ export default function Hotel() {
             <></>
           )}
         </>
-      ) : (
-        renderSummaryHotel()
-      )}
+      );
+    }
+  }
+
+  return (
+    <>
+      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
+      {renderError() ? renderError() : renderHotels()}
     </>
   );  
 }
