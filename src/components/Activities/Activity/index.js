@@ -7,7 +7,7 @@ import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 
-export function Activity({ id, name, time, capacity }) {
+export function Activity({ id, name, time, capacity, list }) {
   const [userBooking, setUserBooking] = useState(null);
   const [avaliableCapacity, setAvaliableCapacity] = useState(capacity);
 
@@ -34,13 +34,13 @@ export function Activity({ id, name, time, capacity }) {
   }
 
   return (
-    <Container haveBooking={userBooking}>
+    <Container haveBooking={userBooking} singleActivity={list === 1}>
       <div>
         <NameActivity>{name}</NameActivity>
         <TimeActivity>{time}</TimeActivity>
       </div>
-      <Line />
-      <AcceptActivity>
+      <Line singleActivity={list === 1} />
+      <AcceptActivity singleActivity={list === 1}>
         {userBooking ? (
           <>
             <AiOutlineCheckCircle size={30} color='#078632' />
@@ -68,7 +68,7 @@ const Container = styled.div`
   margin-left: 9px;
 
   width: 265px;
-  height: 79px;
+  height: ${({ singleActivity }) => (singleActivity ? '168px' : '79px')};
   display: flex;
 
 
@@ -105,14 +105,14 @@ const Line = styled.span`
   margin-left: 8px;
   margin-top: 10px;
   width: 0px;
-  height: 60px;
+  height: ${({ singleActivity }) => (singleActivity ? '149px' : '60px')};
 
   border: 1px solid #CFCFCF;
 `;
 
 const AcceptActivity = styled.div`
   margin-left: 20px !important; 
-  margin-top: 14px !important;
+  margin-top: ${({ singleActivity }) => (singleActivity ? '60px !important' : '14px !important')};
 
   p{
   font-style: normal;
