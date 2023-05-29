@@ -11,7 +11,6 @@ import RoomSelector from '../../../components/Hotel/RoomSelector';
 import { toast } from 'react-toastify';
 import useBooking from '../../../hooks/api/useBooking';
 import { updateBooking } from '../../../services/bookingApi';
-import { render } from '@testing-library/react';
 
 export default function Hotel() {
   const [hotelsList, setHotelsList] = useState([]);
