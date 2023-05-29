@@ -25,7 +25,8 @@ export default function Activities() {
         const formattedDateTime = dateTime.toLocaleDateString('pt-BR', { month: '2-digit', day: '2-digit' });
         return formattedDateTime;
       });
-      setActivitiesDaysList(formattedDateTimeArray);
+      const formattedReverseArray = [...formattedDateTimeArray].reverse();
+      setActivitiesDaysList(formattedReverseArray);
     }
     fetchData();
   }, []);
