@@ -28,6 +28,12 @@ export function ActivitiesDay({ day }) {
     fetchData();
   }, [day]);
 
+  useEffect(() => {
+    setActivitiesMainList([]);
+    setActivitiesSideList([]);
+    setActivitiesWorkshopList([]);
+  }, [day]);
+  
   function timeRender(dateTime, hoursDuration) {
     const startDateTime = new Date(dateTime);
   
