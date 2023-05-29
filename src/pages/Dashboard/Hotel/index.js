@@ -1,6 +1,7 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { HotelCard } from '../../../components/Hotel/HotelCard';
+import { SummaryHotelCard } from '../../../components/Hotel/HotelCard';
 import { getHotels, getHotelsWithRooms } from '../../../services/hotelsApi';
 import { bookingRoom } from '../../../services/bookingApi';
 import { useEffect, useState } from 'react';
@@ -116,13 +117,16 @@ export default function Hotel() {
   }
 
   function renderSummaryHotel() {
+    console.log(bookingData, hotelSummary);
     if(bookingData && hotelSummary) {
       return(
         <>
           <StyledDescription>Você já escolheu seu quarto:</StyledDescription>
-          <HotelCard
+          <SummaryHotelCard
             hotelName={hotelSummary.name}
             hotelImage={hotelSummary.image}
+            roomId={bookingData.Room.id}
+            roomQty={bookingData.Room.name}
           />
           <ConfirmationButton onClick={() => setUpBooking(true)}>
             TROCAR DE QUARTO
