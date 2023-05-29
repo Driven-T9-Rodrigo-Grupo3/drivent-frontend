@@ -33,7 +33,7 @@ export function ActivitiesDay({ day }) {
     setActivitiesSideList([]);
     setActivitiesWorkshopList([]);
   }, [day]);
-  
+
   function timeRender(dateTime, hoursDuration) {
     const startDateTime = new Date(dateTime);
   
@@ -55,6 +55,7 @@ export function ActivitiesDay({ day }) {
             name={props.name}
             time={timeRender(props.dateTime, props.hoursDuration)}
             capacity={props.capacity}
+            list={activitiesMainList.length}
             key={index}
           />
         ))}
@@ -69,6 +70,7 @@ export function ActivitiesDay({ day }) {
             name={props.name}
             time={timeRender(props.dateTime, props.hoursDuration)}
             capacity={props.capacity}
+            list={activitiesSideList.length}
             key={index}
           />
         ))}
@@ -83,6 +85,7 @@ export function ActivitiesDay({ day }) {
             name={props.name}
             time={timeRender(props.dateTime, props.hoursDuration)}
             capacity={props.capacity}
+            list={activitiesWorkshopList.length}
             key={index}
           />
         ))}
