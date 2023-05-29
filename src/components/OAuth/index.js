@@ -1,6 +1,5 @@
 import { IoLogoGithub } from 'react-icons/io';
 import { AiFillGoogleCircle } from 'react-icons/ai';
-import qs from 'query-string';
 
 import styled from 'styled-components';
 import axios from 'axios';
@@ -9,23 +8,23 @@ import { useNavigate } from 'react-router-dom';
 
 export default function OAuth() {
   const navigate = useNavigate();
+
   function githubRedirect() {
     const GITHUB_URL = 'https://github.com/login/oauth/authorize';
     const params = {
       response_type: 'code',
       scope: 'user',
-      client_id: process.env.GITHUB_CLIENT_ID,
-      redirect_uri: process.env.REDIRECT_URI,
+      client_id: process.env.REACT_APP_GITHUB_CLIENT_ID,
+      redirect_uri: process.env.REACT_APP_REDIRECT_URI,
     };
-    const authURL = `${GITHUB_URL}?
-    response_type=code&scope=user&client_id=${process.env.GITHUB_CLIENT_ID}
-    &redirect_uri=${process.env.REDIRECT_URI}`;
-    window.location.href = authURL;
+    const searchParams = new URLSearchParams(params).toString();
+    window.location.href = `${GITHUB_URL}?${searchParams}`;
   }
 
   async function getUserCredentials() {
     try {
-      const { code } = qs.parseUrl(window.location.href).query;
+      const code = new URLSearchParams(window.location.search).get('code');
+      console.log(code);
       if (code) {
         const response = await axios.post('http://localhost:4000/auth/sign-in-github', { code });
         const user = response.data;
@@ -38,7 +37,7 @@ export default function OAuth() {
 
   useEffect(() => {
     getUserCredentials();
-  }, [])
+  }, []);
   return (
     <OAuthButtons>
       <button onClick={githubRedirect}>
